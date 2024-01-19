@@ -1,0 +1,52 @@
+---
+- name: Install Dependencies
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - gnupg
+    state: present
+
+- name: Add Docker GPG APT Key
+  ansible.builtin.apt_key:
+    url: "{{ docker_gpg_url }}"
+    state: present
+
+- name: Add Docker Repository
+  ansible.builtin.apt_repository:
+    repo: "{{ docker_apt_repo }}"
+    state: present
+    filename: docker
+    update_cache: yes
+
+- name: Install Docker
+  ansible.builtin.apt:
+    name: "{{ docker_packages }}"
+    state: present
+    update_cache: yes
+
+- name: Ensure Docker is started and enabled at boot.
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Get docker group info using getent.
+  ansible.builtin.getent:
+    database: group
+    key: docker
+    split: ':'
+  when: docker_users | length > 0
+
+- name: Check if there are any users to add to the docker group.
+  ansible.builtin.set_fact:
+    at_least_one_user_to_modify: true
+  when:
+    - docker_users | length > 0
+    - item not in ansible_facts.getent_group["docker"][2]
+  with_items: "{{ docker_users }}"
+
+- name: Add Users to Docker Group
+  ansible.builtin.include_tasks: docker-users.yml
+  when: at_least_one_user_to_modify is defined
+

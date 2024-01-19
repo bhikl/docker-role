@@ -1,0 +1,14 @@
+galaxy_info:
+  role_name: docker
+  author: bhikl
+  description: Simple role to install Docker on Ubuntu
+  license: "license (BSD, MIT)"
+
+  min_ansible_version: "2.10"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+
