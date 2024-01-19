@@ -17,13 +17,13 @@
     repo: "{{ docker_apt_repo }}"
     state: present
     filename: docker
-    update_cache: yes
+    update_cache: true
 
 - name: Install Docker
   ansible.builtin.apt:
     name: "{{ docker_packages }}"
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Ensure Docker is started and enabled at boot.
   ansible.builtin.service:
@@ -49,4 +49,3 @@
 - name: Add Users to Docker Group
   ansible.builtin.include_tasks: docker-users.yml
   when: at_least_one_user_to_modify is defined
-
