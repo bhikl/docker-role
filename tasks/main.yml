@@ -8,9 +8,10 @@
     state: present
 
 - name: Add Docker GPG APT Key
-  ansible.builtin.apt_key:
+  ansible.builtin.get_url:
     url: "{{ docker_gpg_url }}"
-    state: present
+    dest: /etc/apt/keyrings/docker.asc
+    mode: 444
 
 - name: Add Docker Repository
   ansible.builtin.apt_repository:
